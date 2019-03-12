@@ -68,7 +68,7 @@ const kittyPrompts = {
 
   growUp() {
     const result = kitties.map(cat => cat);
-    result.forEach(cat => cat.age += 2)
+    result.forEach(cat => cat.age += 2);
     return result;
   }
 
@@ -192,13 +192,13 @@ const cakePrompts = {
 
   allToppings() {
 
-    const result = []
+    const result = [];
     cakes.map(cake => cake.toppings)
       .forEach(topping => {
         topping.forEach(item => {
-          result.push(item)
-        })
-      })
+          result.push(item);
+        });
+      });
     return Array.from(new Set(result));
 
     // Annotation:
@@ -207,19 +207,19 @@ const cakePrompts = {
 
   groceryList() {
 
-    const result = {}
-    const toppings = cakes.map(cake => cake.toppings)
+    const result = {};
+    const toppings = cakes.map(cake => cake.toppings);
 
     toppings.forEach(topping => {
-        topping.forEach(item => {
-          result[item] = 0;
-        });
-      })
-    toppings.forEach(topping => {
-        topping.forEach(item => {
-          result[item]++;
-        });
+      topping.forEach(item => {
+        result[item] = 0;
       });
+    });
+    toppings.forEach(topping => {
+      topping.forEach(item => {
+        result[item]++;
+      });
+    });
 
     return result;
 
@@ -258,15 +258,15 @@ const classPrompts = {
   totalCapacities() {
 
     const result = {
-      feCapacity: 0, 
+      feCapacity: 0,
       beCapacity: 0
     };
 
-    const fe = classrooms.filter(room => room.program === 'FE')
-    const be = classrooms.filter(room => room.program === 'BE')
+    const fe = classrooms.filter(room => room.program === 'FE');
+    const be = classrooms.filter(room => room.program === 'BE');
 
-    result['feCapacity'] = fe.reduce((total, room) => total + room.capacity, 0)
-    result['beCapacity'] = be.reduce((total, room) => total + room.capacity, 0)
+    result['feCapacity'] = fe.reduce((total, room) => total + room.capacity, 0);
+    result['beCapacity'] = be.reduce((total, room) => total + room.capacity, 0);
 
     return result;
 
@@ -276,7 +276,7 @@ const classPrompts = {
 
   sortByCapacity() {
 
-    const result = classrooms.sort((a, b) => (a.capacity < b.capacity) ? -1 : 1)
+    const result = classrooms.sort((a, b) => (a.capacity < b.capacity) ? -1 : 1);
     return result;
 
     // Annotation:
@@ -327,12 +327,12 @@ const breweryPrompts = {
 
     const result = [];
     breweries.map(brewery => brewery.beers)
-    .forEach(beerList => {
-      beerList.forEach(beer => {
-        result.push(beer)
-      })
-    })
-    return result.reduce((a,b) => Math.max(a.abv, b.abv) === a.abv ? a : b);
+      .forEach(beerList => {
+        beerList.forEach(beer => {
+          result.push(beer);
+        });
+      });
+    return result.reduce((a, b) => Math.max(a.abv, b.abv) === a.abv ? a : b);
 
     // Annotation:
     // I used the same method as the cakes to create a single array of all beers. Then I used reduce to compare two beers a, b and return either based on the max of their respective abv. This ultimately returns 1 value, the single beer with the highest abv.
@@ -385,12 +385,17 @@ const turingPrompts = {
 
   studentsPerInstructor() {
 
-    const numTeachers = {1: 0, 2: 0, 3: 0, 4: 0}
-    const result = {}
+    const numTeachers = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0
+    };
+    const result = {};
 
     instructors.forEach(instructor => numTeachers[instructor.module]++);
     cohorts.forEach(cohort => {
-      result[`cohort${cohort.cohort}`] = cohort.studentCount / numTeachers[cohort.module]
+      result[`cohort${cohort.cohort}`] = cohort.studentCount / numTeachers[cohort.module];
     });
     return result;
 
@@ -462,18 +467,18 @@ const bossPrompts = {
       bossName: boss.name,
       sidekickLoyalty: sidekicks.reduce((total, sidekick) => {
         boss.sidekicks.forEach(bossSidekick => {
-          if(bossSidekick.name === sidekick.name) {
+          if (bossSidekick.name === sidekick.name) {
             total += sidekick.loyaltyToBoss;
           }
-        })
+        });
         return total;
       }, 0)
-    }))
+    }));
 
     return result;
 
     // Annotation:
-    // I wanted to loop through the values of the bosses object, which would return an array of all the individual boss object.
+    // I wanted to loop through the values of the bosses object, which would return an array of all the individual boss object. I then wanted to loop through the sidekicks object and compare the names of each with the names in the boss sidekicks array. I then reduced their loyalty value to a single sum and assign that to sidekickLoyalty.
   }
 };
 
@@ -511,7 +516,18 @@ const astronomyPrompts = {
     //     color: 'red' }
     // ]
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    //want to use reduce/filter
+
+    const result = [];
+  
+    stars.forEach(star => {
+      Object.values(constellations).forEach((constellation) => {
+        if(star.constellation === constellation.names[0]) {
+          result.push(star);
+        }
+      });
+    });
+
     return result;
 
     // Annotation:
