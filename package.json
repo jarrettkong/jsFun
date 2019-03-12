@@ -1,5 +1,5 @@
 {
-  "name": "jsFun",
+  "name": "jsfun",
   "version": "1.0.0",
   "description": "Practice problems for JavaScript Fundamentals",
   "main": "index.js",
@@ -19,5 +19,16 @@
     "eslint": "^5.9.0",
     "mocha": "^5.2.0",
     "mocha-clean": "^1.0.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jarrettkong/jsFun.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jarrettkong/jsFun/issues"
+  },
+  "homepage": "https://github.com/jarrettkong/jsFun#readme"
 }
