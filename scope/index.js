@@ -11,25 +11,30 @@ const scope = {
       }
 
       function beautifyPerson() {
-        // Log A: personB
+        // Log A: personB // 'Ben'
         
         if (personB.includes('B')) {
-          personB = person;
-          personC = personB;
-          // Log B: personC
+          personB = person; // personB <= CardiB
+          personC = personB; // personC <= CardiB
+          // Log B: personC // CardiB
         }
       }
 
-      personC = personA;
+      personC = personA; // personC <= 'Paul'
 
-      // Log C: personB
+      // Log C: personB // CardiB
     }
 
     changePerson();
 
-    // Log D: personC
+    // Log D: personC // 'Paul'
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 'Ben' },
+      { B: 'CardiB' },
+      { C: 'CardiB' },
+      { D: 'Paul' },
+    ];
     return result;
 
     // Annotation:
@@ -102,7 +107,12 @@ const scope = {
 
     // Log D: greeting
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 'Yo' },
+      { B: 'Hey' },
+      { C: 'Hey' },
+      { D: 'Hello' }
+    ];
     return result;
 
     // Annotation:
@@ -119,24 +129,30 @@ const scope = {
         let greeting = 'hello';
       }
 
-      // Log A: greeting
+      // Log A: greeting // 'hi'
 
       const newGreeting = ()  => {
         greeting = 'welcome';
 
-        // Log B: greeting
+        // Log B: greeting // 'welcome'
       };
 
       newGreeting();
 
-      // Log C: greeting
+      // Log C: greeting // 'welcome'
     };
 
     greetingGenerator();
 
-    // Log D: greeting
+    // Log D: greeting // 'howdy'
+    
+    const result = [
+      { A: 'hi' },
+      { B: 'welcome' },
+      { C: 'welcome' },
+      { D: 'howdy' }
+    ];
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
     return result;
 
     // Annotation:
@@ -156,19 +172,24 @@ const scope = {
           let name = 'Brittany';
         }
 
-        // Log A: name
+        // Log A: name // 'Nathaniel'
       }
 
-      // Log B: name
+      // Log B: name // 'Nathaniel'
     }
 
-    // Log C: name
+    // Log C: name // 'Brittany'
 
     sayName();
 
-    // Log D: name
+    // Log D: name // 'Brittany'
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { C: 'Brittany' },
+      { A: 'Nathaniel' },
+      { B: 'Nathaniel' },
+      { D: 'Brittany' }
+    ];
     return result;
 
     // Annotation:
@@ -179,31 +200,37 @@ const scope = {
     var dog = 'Spot';
 
     function petDog() {
-      // Log A: dog
+      // Log A: dog // 'Spot'
 
       if (dog === 'Spot') {
         let dog = 'Fluffy';
       }
 
       function rollOver() {
-        // Log B: dog
+        // Log B: dog // 'Spot'
 
         dog = 'Biscuit';
 
-        // Log C: dog
+        // Log C: dog // 'Biscuit'
 
       }
 
       rollOver();
 
-      // Log D: dog
+      // Log D: dog // 'Biscuit'
     }
 
     petDog();
 
-    // Log E: dog
+    // Log E: dog // 'Biscuit'
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 'Spot' },
+      { B: 'Spot' },
+      { C: 'Biscuit' },
+      { D: 'Biscuit' },
+      { E: 'Biscuit' }
+    ];
     return result;
 
     // Annotation:
@@ -219,25 +246,30 @@ const scope = {
         var fruit = 'mango';
 
         if (fruit) {
-          // Log A: fruit
+          // Log A: fruit // 1: 'mango'
           const fruit = 'strawberry';
         }
-
-        // Log B: fruit
+        // Log B: fruit // 2: 'mango'
       }
 
-      // Log C: fruit
+      // Log C: fruit // 3: 'apple'
     }
 
     eatFruit();
 
-    // Log D: fruit
+    // Log D: fruit // 4: 'apple'
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 'reference error' },
+      { B: 'mango' },
+      { C: 'mango' },
+      { D: 'apple' }
+    ];
+
     return result;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // const is not hoisted
   },
 
   exerciseH() {
@@ -246,7 +278,7 @@ const scope = {
     const fn1 = function() {
       let num = 4;
 
-      // Log A: num
+      // Log A: num // 1: 4
 
       if (num < 5) {
         const num = 9;
@@ -255,25 +287,30 @@ const scope = {
 
         const newNum = num;
 
-        // Log B: newNum
+        // Log B: newNum // 4: 9
       }
 
       newNum = num;
 
-      // Log C: newNum
+      // Log C: newNum // 5: 4
     };
 
-    const fn2 = function(num){
-      // Log D: num
+    const fn2 = function(num) {
+      // Log D: num // 2: 9
 
-      num = num + 1;
+      num = num + 1; 
 
-      // Log E: num
+      // Log E: num // 3: 10
     };
 
     fn1();
-
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 4 },
+      { D: 9 },
+      { E: 10 },
+      { B: 9 },
+      { C: 4 }
+    ];
     return result;
 
     // Annotation:
@@ -285,26 +322,35 @@ const scope = {
 
     function eatSnack() {
       hunger -= 25;
-      // Log A: hunger
+      // Log A: hunger // 1: 75 5: 55
       gorgeYourself();
 
       function gorgeYourself() {
         const hunger = 0;
-        // Log B: hunger
+        // Log B: hunger // 2: 0 6: 0
       }
 
-      // Log C: hunger
+      // Log C: hunger // 3: 75 7: 55
     }
 
     eatSnack();
 
     hunger += 5;
-    // Log D: hunger
+    // Log D: hunger // 4: 80
 
     eatSnack();
-    // Log E: hunger
-
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    // Log E: hunger // 5: 55 8: 55
+ 
+    const result = [
+      { A: 75 },
+      { B: 0 },
+      { C: 75 },
+      { D: 80 },
+      { A: 55 },
+      { B: 0 },
+      { C: 55 },
+      { E: 55 }
+    ];
     return result;
 
     // Annotation:
@@ -314,22 +360,22 @@ const scope = {
   exerciseJ() {
     let sandwich = 'ketchup sandwich';
 
-    // Log A: sandwich
+    // Log A: sandwich // 1. 'ketchup sandwich'
 
     const addChipotle = () => {
-      // Log B: toppings
+      // Log B: toppings // 3. undefined
       var toppings = 'chipotle sauce';
 
       if (toppings === 'chipotle sauce') { 
         sandwich = 'not a mediocre sandwich';
       }
 
-      // Log C: sandwich
+      // Log C: sandwich // 4. not a mediocre sandwich
     };
 
     const addCheese = () => {
       let cheeseTopping = 'gouda';
-      // Log D: cheeseTopping
+      // Log D: cheeseTopping // 2. gouda
 
       const shesTheManReference = () => {
         amandaBynes = 'National Treasure';
@@ -342,10 +388,17 @@ const scope = {
     addCheese();
 
     addChipotle();
-    // Log E: sandwich
-    // Log F: amandaBynes
+    // Log E: sandwich // 5. not a mediocre sandwich
+    // Log F: amandaBynes // 6. undefined
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 'ketchup sandwich' },
+      { D: 'gouda' },
+      { B: undefined },
+      { C: 'not a mediocre sandwich' },
+      { E: 'not a mediocre sandwich' },
+      { F: 'National Treasure' }
+    ];
     return result;
 
     // Annotation:
@@ -359,14 +412,18 @@ const scope = {
       if (num > 5) {
         num = 7;
       }
-      // Log A: num
+      // Log A: num // 1. 7
     }
 
     foo();
 
-    // Log B: num
+    // Log B: num // 2. 7
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 7 },
+      { B: 7 },
+    ];
+
     return result;
 
     // Annotation:
@@ -386,19 +443,23 @@ const scope = {
           let grade = 97;
         }
 
-        // Log A: grade
+        // Log A: grade // 1. 95
       }
 
       addPoints();
 
-      // Log B: grade
+      // Log B: grade // 2. 90
     }
 
     losePoints();
 
-    // Log C: grade
+    // Log C: grade // 3. 90
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 95 },
+      { B: 90 },
+      { C: 90 }
+    ];
     return result;
 
     // Annotation:
@@ -409,22 +470,27 @@ const scope = {
     var num = 5;
 
     function first() {
-      // Log A: num
+      // Log A: num // 1. 5
       num = 6;
-      // Log B: num
+      // Log B: num // 2. 6
     }
 
     function second() {
-      // Log C: num
+      // Log C: num // 3. reference error
       let num = 7;
     }
 
     first();
     second();
 
-    // Log D: num
+    // Log D: num // 4. 6
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 5 },
+      { B: 6 },
+      { C: 'reference error' },
+      { D: 6 }
+    ];
     return result;
 
     // Annotation:
@@ -436,7 +502,7 @@ const scope = {
 
     function changeInstructor() {
 
-      // Log A: instructor
+      // Log A: instructor // 2. Pam
 
       if (instructor === 'Brittany') {
         const instructor = 'Nathaniel';
@@ -444,26 +510,33 @@ const scope = {
         let instructor = 'Brittany';
       }
 
-      // Log B: instructor
+      // Log B: instructor // 3. Pam
 
       function rename() {
         instructor = 'Louisa';
-        // Log C: instructor
+        // Log C: instructor // 4. Louisa
       }
 
       rename();
 
-      // Log D: instructor
+      // Log D: instructor // 5. Louisa
 
     }
 
-    // Log E: instructor
+    // Log E: instructor // 1. Pam
 
     changeInstructor();
 
-    // Log F: instructor
+    // Log F: instructor // 6. Louisa
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { E: 'Pam' },
+      { A: 'Pam' },
+      { B: 'Pam' },
+      { C: 'Louisa' },
+      { D: 'Louisa' },
+      { F: 'Louisa' }
+    ];
     return result;
 
     // Annotation:
@@ -474,15 +547,19 @@ const scope = {
     var shoe = 'flipflop';
 
     function putOnShoe() {
-      // Log A: shoe
+      // Log A: shoe // 2. undefined
       var shoe = 'boot';
     }
 
-    // Log B: shoe
+    // Log B: shoe // 1. flipflop
     putOnShoe();
-    // Log C: shoe
+    // Log C: shoe // 3. flipflop
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { B: 'flipflop' },
+      { A: undefined },
+      { C: 'flipflop' }
+    ];
     return result;
 
     // Annotation:
@@ -501,14 +578,17 @@ const scope = {
         lunch = 'soup';
       }
 
-      // Log B: lunch
+      // Log B: lunch // 1. soup
     }
 
     orderLunch();
 
-    // Log C: lunch
+    // Log C: lunch // 2. soup
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { B: 'soup' },
+      { C: 'soup' },
+    ];
     return result;
 
     // Annotation:
@@ -520,13 +600,13 @@ const scope = {
     let wildKids = ['Antigone'];
 
     let myCrazyKidAntics = kid => {
-      // Log A: kid
+      // Log A: kid // 1. Pandora
       wildKids.push(kid);
-      // Log B: wildKids
+      // Log B: wildKids // 2. ['Antigone', 'Pandora']
   
       let drawOnTheWall = () => {
         let myKid = 'Mandy';
-        // Log C: myKid
+        // Log C: myKid // 3. Mandy
         return `That wild kid ${myKid}, drew on the wall!`;
       };
 
@@ -534,18 +614,24 @@ const scope = {
 
       let myAmazingKid = () => {
         let myKid = wildKids.shift();
-        // Log D: myKid
+        // Log D: myKid // 4. 'Antigone'
         return `That kid ${myKid}, is AMAZING!`;
       };
 
       myAmazingKid();
-      // Log E: myKid;
+      // Log E: myKid; // 5. 'Pandora'
       return `All these kids are wild, especially, ${myKid}!`;
     };
 
     myCrazyKidAntics(myKid);
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 'Pandora' },
+      { B: ['Antigone', 'Pandora'] },
+      { C: 'Mandy' },
+      { D: 'Antigone' },
+      { E: 'Pandora' },
+    ];
     return result;
 
     // Annotation:
@@ -554,15 +640,15 @@ const scope = {
 
   exerciseR() {
     let myName = 'Rody';
-    // Log A: myName
+    // Log A: myName // 1. Rody
 
     const parentFunc = () => {
       myName += 'Toy';
-      // Log B: myName
+      // Log B: myName // 2. RodyToy
 
       let innerFunc = () => {
         let myName = 'Tesla'; 
-        // Log C: myName
+        // Log C: myName // 3. Tesla
       };
 
       innerFunc();
@@ -570,9 +656,14 @@ const scope = {
     };
 
     parentFunc();
-    // Log D: myName
+    // Log D: myName // 4. RodyToyDaniels
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [
+      { A: 'Rody'},
+      { B: 'RodyToy'},
+      { C: 'Tesla'},
+      { D: 'RodyToyDaniels'},
+    ];
     return result;
 
     // Annotation:
