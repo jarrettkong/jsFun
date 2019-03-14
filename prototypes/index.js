@@ -95,15 +95,25 @@ const kittyPrompts = {
 // DATASET: clubs from ./datasets/clubs
 const clubPrompts = {
   membersBelongingToClubs() {
-    // Create an object whose keys are the names of people, and whose values are
-    // arrays that include the names of the clubs that person is a part of. e.g. 
-    // {
-    //   Louisa: ['Drama', 'Art'],
-    //   Pam: ['Drama', 'Art', 'Chess'],
-    //   ...etc
-    // }
 
-    const result = 'test';
+    const result = {};
+    const members = new Set(clubs.reduce((people, club) => {
+      club.members.forEach(member => people.push(member));
+      return people;
+    }, []));
+
+    members.forEach(member => {
+      result[member] = [];
+    });
+
+    clubs.forEach(club => {
+      members.forEach(member => {
+        if(club.members.includes(member)) {
+          result[member].push(club.club);
+        }
+      });
+    });
+
     return result;
 
     // Annotation:
@@ -404,21 +414,18 @@ const turingPrompts = {
   },
 
   modulesPerTeacher() {
-    // Return an object where each key is an instructor name and each value is
-    // an array of the modules they can teach based on their skills. e.g.:
-    // {
-    //     Pam: [2, 4],
-    //     Brittany: [2, 4],
-    //     Nathaniel: [2, 4],
-    //     Robbie: [4],
-    //     Leta: [4, 2],
-    //     Travis: [1, 2, 3, 4],
-    //     Louisa: [1, 2, 3, 4],
-    //     Christie: [1, 2, 3, 4],
-    //     Will: [1, 2, 3, 4]
-    //   }
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = {};
+
+    instructors.forEach(instructor => {
+      result[instructor.name] = cohorts.reduce((total, cohort) => {
+        if(instructor.teaches.some(r => cohort.curriculum.indexOf(r) >= 0)) {
+          total.push(cohort.module);
+        }
+        return total;
+      }, []);
+    });
+
     return result;
 
     // Annotation:
@@ -426,16 +433,24 @@ const turingPrompts = {
   },
 
   curriculumPerTeacher() {
-    // Return an object where each key is a curriculum topic and each value is
-    // an array of instructors who teach that topic e.g.:
-    // { 
-    //   html: [ 'Travis', 'Louisa' ],
-    //   css: [ 'Travis', 'Louisa' ],
-    //   javascript: [ 'Travis', 'Louisa', 'Christie', 'Will' ],
-    //   recursion: [ 'Pam', 'Leta' ]
-    // }
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result =  {};  
+    const subjects = Array.from(new Set(cohorts.reduce((total, cohort) => {
+      cohort.curriculum.forEach(subject => {
+        total.push(subject);
+      });
+      return total;
+    }, [])));
+
+    subjects.forEach(subject => {
+      result[subject] = instructors.reduce((total, instructor) => {
+        if(instructor.teaches.includes(subject)) {
+          total.push(instructor.name);
+        }
+        return total;
+      }, []);
+    });
+
     return result;
 
     // Annotation:
@@ -501,20 +516,6 @@ const bossPrompts = {
 // DATASET: constellations, stars } from ./datasets/astronomy
 const astronomyPrompts = {
   starsInConstellations() {
-    // Return an array of all the stars that appear in any of the constellations
-    // listed in the constellations object e.g.
-    // [ 
-    //   { name: 'Rigel',
-    //     visualMagnitude: 0.13,
-    //     constellation: 'Orion',
-    //     lightYearsFromEarth: 860,
-    //     color: 'blue' },
-    //   { name: 'Betelgeuse',
-    //     visualMagnitude: 0.5,
-    //     constellation: 'Orion',
-    //     lightYearsFromEarth: 640,
-    //     color: 'red' }
-    // ]
 
     //want to use reduce/filter
 
@@ -535,17 +536,12 @@ const astronomyPrompts = {
   },
 
   starsByColor() {
-    // Return an object with keys of the different colors of the stars,
-    // whose values are arrays containing the star objects that match e.g.
-    // {
-    //   blue: [{obj}, {obj}, {obj}, {obj}, {obj}],
-    //   white: [{obj}, {obj}],
-    //   yellow: [{obj}, {obj}],
-    //   orange: [{obj}],
-    //   red: [{obj}]
-    // }
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = {};
+
+    stars.forEach(star => result[star.color] = []);
+    stars.forEach(star => result[star.color].push(star));
+
     return result;
 
     // Annotation:
@@ -553,19 +549,14 @@ const astronomyPrompts = {
   },
 
   constellationsStarsExistIn() {
-    // Return an array of the names of the constellations that the brightest stars are part of e.g.
-    // [ 'Canis Major',
-    //   'Carina',
-    //   'Boötes',
-    //   'Lyra',
-    //   'Auriga',
-    //   'Orion',
-    //   'Canis Minor',
-    //   'Eridanus',
-    //   'Orion',
-    //   'Centaurus' ]
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = [];
+    
+    stars.sort((a,b) => a.visualMagnitude < b.visualMagnitude ? -1 : 1)
+      .forEach(star => {
+        result.push(star.constellation);
+      });
+
     return result;
 
     // Annotation:
@@ -596,7 +587,13 @@ const ultimaPrompts = {
     // Return the sum of the amount of damage for all the weapons that our characters can use
     // Answer => 113
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = Object.values(characters).reduce((total, character) => {
+      character.weapons.forEach(weapon => {
+        total += weapons[weapon].damage;
+      });
+      return total;
+    }, 0);
+
     return result;
 
     // Annotation:
@@ -605,10 +602,20 @@ const ultimaPrompts = {
 
   charactersByTotal() {
 
-    // Return the sum damage and total range for each character as an object. 
-    // ex: [ { Avatar: { damage: 27, range: 24 }, { Iolo: {...}, ...}
+    const result = [];
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    for(let i = 0; i < characters.length; i++) {
+      result.push({});
+      result[i][characters[i].name] = {};
+    }
+    
+    for(let i = 0; i < characters.length; i++) {
+      result[i][characters[i].name] = {
+        damage: characters[i].weapons.reduce((total, weapon) => total + weapons[weapon].damage, 0),
+        range: characters[i].weapons.reduce((total, weapon) => total + weapons[weapon].range, 0)
+      };
+    }
+
     return result;
 
     // Annotation:
@@ -635,17 +642,18 @@ const ultimaPrompts = {
 // DATASET: dinosaurs, humans, movies from ./datasets/dinosaurs
 const dinosaurPrompts = {
   countAwesomeDinosaurs() {
-    // Return an object where each key is a movie title and each value is the 
-    // number of awesome dinosaurs in that movie. e.g.:
-    // {
-    //   'Jurassic Park': 5,
-    //   'The Lost World: Jurassic Park': 8,
-    //   'Jurassic Park III': 9,
-    //   'Jurassic World': 11,
-    //   'Jurassic World: Fallen Kingdom': 18
-    // }
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = {};
+
+    movies.forEach(movie => {
+      result[movie.title] = movie.dinos.reduce((total, dino) => {
+        if(dinosaurs[dino].isAwesome) {
+          total++;
+        }
+        return total;
+      }, 0);
+    });
+
     return result;
 
     // Annotation:
@@ -653,32 +661,19 @@ const dinosaurPrompts = {
   },
 
   averageAgePerMovie() {
-    /* Return an object where each key is a movie director's name and each value is
-        an object whose key is a movie's title and whose value is the average age
-        of the cast on the release year of that movie.
-      e.g.:
-      { 
-        'Steven Spielberg': 
-          { 
-            'Jurassic Park': 34,
-            'The Lost World: Jurassic Park': 37 
-          },
-        'Joe Johnston': 
-          { 
-            'Jurassic Park III': 44 
-          },
-        'Colin Trevorrow': 
-          { 
-            'Jurassic World': 56
-           },
-        'J. A. Bayona': 
-          { 
-            'Jurassic World: Fallen Kingdom': 59 
-          } 
-      }
-    */
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    const result = {};
+
+    movies.forEach(movie => {
+      result[movie.director] = {};
+    });
+
+    movies.forEach(movie => {
+      result[movie.director][movie.title] = Math.floor(movie.cast.reduce((total, actor) => {
+        return (total + (movie.yearReleased - humans[actor].yearBorn));
+      }, 0) / movie.cast.length);
+    });
+
     return result;
 
     // Annotation:
@@ -686,41 +681,51 @@ const dinosaurPrompts = {
   },
 
   uncastActors() {
-    /*
-    Return an array of objects that contain the names of humans who have not been cast in a Jurassic Park movie (yet), their nationality, and their imdbStarMeterRating. The object in the array should be sorted alphabetically by nationality.
+ 
+    const result = [];
+    const allActors = movies.reduce((total, movie) => {
+      movie.cast.forEach(actor => total.push(actor));
+      return total;
+    }, []);
 
-    e.g.
+    Object.keys(humans).forEach(human => {
+      if(!allActors.includes(human)) {
+        result.push({
+          name: human,
+          nationality: humans[human].nationality,
+          imdbStarMeterRating: humans[human].imdbStarMeterRating
+        });
+      }
+    });
 
-    [ { name: 'Justin Duncan', nationality: 'Alien', imdbStarMeterRating: 0 },
-      { name: 'Tom Wilhoit', nationality: 'Kiwi', imdbStarMeterRating: 1 },
-      { name: 'Jeo D', nationality: 'Martian', imdbStarMeterRating: 0 },
-      { name: 'Karin Ohman', nationality: 'Swedish', imdbStarMeterRating: 0 } ]
-    */
-
-    const result = 'REPLACE WITH YOUR RESULT HERE';
-    return result;
+    return result.sort((a,b) => a.nationality < b.nationality ? -1 : 1);
 
     // Annotation:
     // Write your annotation here as a comment
   },
 
   actorsAgesInMovies() {
-    /*
-    Return an array of objects for each human and the age(s) they were in the movie(s) they were cast in, as an array of age(s). Only include humans who were cast in at least one movie.
 
-    e.g.
-    [ { name: 'Sam Neill', ages: [ 46, 54 ] },
-      { name: 'Laura Dern', ages: [ 26, 34 ] },
-      { name: 'Jeff Goldblum', ages: [ 41, 45, 63, 66 ] },
-      { name: 'Richard Attenborough', ages: [ 70, 74, 92, 95 ] },
-      { name: 'Ariana Richards', ages: [ 14, 18 ] },
-      { name: 'Joseph Mazello', ages: [ 10, 14 ] },
-      { name: 'BD Wong', ages: [ 33, 55, 58 ] },
-      { name: 'Chris Pratt', ages: [ 36, 39 ] },
-      { name: 'Bryce Dallas Howard', ages: [ 34, 37 ] } ]
-    */
+    const result = [];
+    const allActors = movies.reduce((total, movie) => {
+      movie.cast.forEach(actor => total.push(actor));
+      return total;
+    }, []);
 
-    const result = 'REPLACE WITH YOUR RESULT HERE';
+    Object.keys(humans).forEach(human => {
+      if(allActors.includes(human)) {
+        result.push({
+          name: human,
+          ages: movies.reduce((total, movie) => {
+            if(movie.cast.includes(human)) {
+              total.push(movie.yearReleased - humans[human].yearBorn);
+            }
+            return total;
+          }, [])
+        });
+      }
+    });
+
     return result;
 
     // Annotation:
