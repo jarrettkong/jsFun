@@ -1,3 +1,7 @@
+// ! Can .map() be used for growUp() by accessing the age property directly?
+// ! How to destructure and keep reference to whole obj? ie. starsByColor()
+// ! .sort() mutates original array? How to solve without using .sort()?
+
 const {
   kitties
 } = require('./datasets/kitties');
@@ -39,114 +43,88 @@ const {
 } = require('./datasets/dinosaurs');
 
 
-
-
-
-
 // SINGLE DATASETS
 // =================================================================
 
 // DATASET: kitties from ./datasets/kitties
 const kittyPrompts = {
+
   orangeKittyNames() {
-    const result = kitties.filter(cat => cat.color === 'orange').map(cat => cat.name);
-    return result;
+
+    return kitties.filter(({ color }) => color === 'orange').map(cat => cat.name);
 
     // Annotation:
     // I first began by using Array.filter() to find only the orage cats, then intead of using .forEach() to loop through all the cats and add only the names to a new Array to return, I used map on the result of filter on the same line.
   },
 
   sortByAge() {
-    // Sort the kitties by their age
 
-    const result = kitties.sort((a, b) => (a.age < b.age) ? 1 : -1);
-    return result;
+    return kitties.sort((a, b) => b.age - a.age);
 
     // Annotation:
     // I initially wrote a comparison function, which took 2 arguments, a & b. These represent two consecutive objects in the array, in this case cats. The return 1 and -1 statements tell the sort function that if a.age < b.age, then the sort order of a should be increased by 1, otherwise decreased. This continues for all cats a, b until the entire array has been sorted.
   },
 
+  // ! Does this mutate the original data?
   growUp() {
-    const result = kitties.map(cat => cat);
-    result.forEach(cat => cat.age += 2);
-    return result;
+
+    return kitties.reduce((cats, cat) => {
+      cat.age += 2;
+      cats.push(cat);
+      return cats;
+    }, []);
   }
 
   // Annotation:
-  // This solution works, but I decided to make an exact copy of the original Array using .map() because I didn't want to mutate the original data. I read about Object.assign(), but I wasn't quite sure how to use it so I stuck with this method.
+  // I used .reduce() on the `kitties` array, and then added 2 to the age of each cat. From there, the cats were added to the accumulator `cats` array. Cats is returned after each loop.
 };
 
 
-
-
-
-
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
-
-
 
 
 // DATASET: clubs from ./datasets/clubs
 const clubPrompts = {
+
   membersBelongingToClubs() {
 
-    const result = {};
-    const members = new Set(clubs.reduce((people, club) => {
-      club.members.forEach(member => people.push(member));
-      return people;
-    }, []));
-
-    members.forEach(member => {
-      result[member] = [];
-    });
-
-    clubs.forEach(club => {
+    return clubs.reduce((total, { club, members }) => {
       members.forEach(member => {
-        if(club.members.includes(member)) {
-          result[member].push(club.club);
+        if(!total[member]) {
+          total[member] = [];
         }
+        total[member].push(club);
       });
-    });
+      return total;
+    }, {});
 
-    return result;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // Here `reduce` is called on the clubs, and is passed 2 arguments: `clubs` and a destructured current value object `{ club, members }`. Members is an array, so `forEach` is called on it. If there is no key in `total` matched `member`, it is initialized to an empty array. After that, `club` is pushed to the corresponding array for that `member`. After the members are looped through, `total` is returned for `reduce`.
   }
 };
 
 
-
-
-
-
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
-
-
 
 
 // DATASET: mods from ./datasets/mods
 const modPrompts = {
 
   studentsPerMod() {
-    const result = mods.map(module => ({
-      mod: module.mod,
-      studentsPerInstructor: module.students / module.instructors
-    }));
 
-    return result;
+    return mods.map(({ mod, students, instructors }) => ({
+      mod: mod,
+      studentsPerInstructor: students / instructors
+    }));
 
     // Annotation:
     // I used .map() to take each object in the original Array and output them to a new array with a key of the mod and calculated studentsPerInstructor with division. The extra set of parentheses is to tell the compiler that I am returning an object instead of denoting a multiline function because I am using ES6 arrow syntax
@@ -154,140 +132,113 @@ const modPrompts = {
 };
 
 
-
-
-
-
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
-
-
 
 
 // DATASET: cakes from ./datasets/cakes
 const cakePrompts = {
 
   stockPerCake() {
-    const result = cakes.map(cake => ({
-      flavor: cake.cakeFlavor,
-      inStock: cake.inStock
+    return cakes.map(({ cakeFlavor, inStock }) => ({
+      flavor: cakeFlavor,
+      inStock: inStock
     }));
 
-    return result;
-
     // Annotation:
-    // Similar to the above algorithm, I used .map() to output new objects with the specified key/value pairs in a new array. Once again the extra set of parentheses is to tell the compiler that I am returning an object instead of denoting a multiline function because I am using ES6 arrow syntax
+    // Similar to the above algorithm, I used .map() to output new objects with the specified key/value pairs in a new array. `flavor` is assigned the value of `cake.cakeFlavor` and inStock is assigned `cake.inStock`
   },
 
   onlyInStock() {
-    const result = cakes.filter(cake => cake.inStock > 0);
-    return result;
+
+    return cakes.filter(cake => cake.inStock > 0);
 
     // Annotation:
     // This is a simple case for the .filter() method, just use inStock > 0 as the condition.
   },
 
   totalInventory() {
-    const result = cakes.reduce((total, cake) => total + cake.inStock, 0);
-    return result;
+
+    return cakes.reduce((total, { inStock }) => total + inStock, 0);
 
     // Annotation:
-    // Array.reduce is perfect anytime an array needs to be 'reduced' to a single thing, in this case the sum of all the cake.inStock. The first parameter of the anon. function is the accumulator, the variable we are reducing to. The second is the current item, in this case a cake. The 0 after the comma is the initial value of total.
+    // Array.reduce is perfect anytime an array needs to be 'reduced' to a single data type, in this case the sum of all the `cake.inStock`. The first parameter of the anon. function is the accumulator, the variable we are reducing to. The second is the current item, in this case a cake, destructured to just the stock amount. The 0 after the comma is the initial value of total.
   },
 
   allToppings() {
 
-    const result = [];
-    cakes.map(cake => cake.toppings)
-      .forEach(topping => {
-        topping.forEach(item => {
-          result.push(item);
-        });
+    return cakes.reduce((total, { toppings }) => {
+      toppings.forEach(topping => {
+        if(!total.includes(topping)) {
+          total.push(topping);
+        }
       });
-    return Array.from(new Set(result));
+      return total;
+    }, []);
 
     // Annotation:
-    // I first started by filtering out all the ingredients. However,the ingredients were in arrays themselves, so that required me to then loop through those arrays and add each ingredient to the results array. Whenever I need unique items, I like to use a Set, which accepts an iterable as an argument and keeps only the unique items. I then used Array.from() to conver that to an array. 
+    // `reduce` is called on cakes, accepting `total` and `{ toppings }` as arguments. Toppings is then looped through, and each topping is checked to see if the cumulative list `toppings` already contains that `toppins` because we are looking for unique values. At the end of the loop, `total` is returned.
   },
 
   groceryList() {
 
-    const result = {};
-    const toppings = cakes.map(cake => cake.toppings);
-
-    toppings.forEach(topping => {
-      topping.forEach(item => {
-        result[item] = 0;
+    return cakes.reduce((ingredients, { toppings }) => {
+      toppings.forEach(topping => {
+        if(!ingredients[topping]) {
+          ingredients[topping] = 0;
+        }
+        ingredients[topping]++;
       });
-    });
-    toppings.forEach(topping => {
-      topping.forEach(item => {
-        result[item]++;
-      });
-    });
-
-    return result;
+      return ingredients;
+    }, {});
 
     // Annotation:
-    // First I separated the toppings out and the looped through them, creating a key for each one in the result object and initializing it to 0. I then looped through it again, this time incrementing each one for each occurance.
+    // Here `reduce` is called on `cakes`, accepting the accumulator `ingredients` and `{ toppings }` as arguments. `ingredients` is initialized as an empty object. Toppings is then looped through, and a check is performed to see if `ingredients` has a key for that `topping`. If not, we want to initialize that key to 0. This will short circuit if the key already exists, then the corresponding key is incremented. At the end of the each iteration, `ingredients` is returned to continue.
   }
 };
 
 
-
-
-
-
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
-
-
 
 
 // DATASET: classrooms from ./datasets/classrooms
 const classPrompts = {
+
   feClassrooms() {
 
-    const result = classrooms.filter(room => room.program === 'FE');
-    return result;
+    return classrooms.filter(room => room.program === 'FE');
 
     // Annotation:
-    // Another simple .filter() function, just returning the rooms where room.program === 'FE';
+    // Another simple .filter() function, just returning the rooms where room.program === 'FE' will return what we want;
   },
 
   totalCapacities() {
 
-    const result = {
-      feCapacity: 0,
-      beCapacity: 0
-    };
+    // ! Not the most dynamic
 
-    const fe = classrooms.filter(room => room.program === 'FE');
-    const be = classrooms.filter(room => room.program === 'BE');
-
-    result['feCapacity'] = fe.reduce((total, room) => total + room.capacity, 0);
-    result['beCapacity'] = be.reduce((total, room) => total + room.capacity, 0);
-
-    return result;
+    return classrooms.reduce((total, { program, capacity }) => {
+      if(program === 'FE' ) {
+        total.feCapacity += capacity; 
+      } else {
+        total.beCapacity += capacity;
+      }
+      return total;
+    }, { feCapacity: 0, beCapacity: 0 });
 
     // Annotation:
-    // I simply separated the rooms by program. I then summed the capactiy all the rooms to a single total and assigned that sum to the corresponding key in the result object.
+    // We use `reduce` here because our output needs to be an object, and `reduce` can do that. The accumulator `total` is initalized as an object with keys for each capacity and 0 for each value. Then each `program` is checked to be `FE`, and the corresponding capactiy is updated with the `capacity` for that room.
   },
 
   sortByCapacity() {
 
-    const result = classrooms.sort((a, b) => (a.capacity < b.capacity) ? -1 : 1);
-    return result;
+    return classrooms.sort((a, b) => a.capacity - b.capacity);
 
     // Annotation:
     // Similar to the kittens sort, I passed a function that took two classrooms a, b and compared their capactiy. If the capacity of a is less than b, then a is sorted lower than b. This continues for the whole array until it is sorted.
@@ -295,27 +246,19 @@ const classPrompts = {
 };
 
 
-
-
-
-
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
-
-
 
 
 // DATASET: breweries from ./datasets/breweries
 const breweryPrompts = {
+
   getBeerCount() {
 
-    const result = breweries.reduce((total, brewery) => total + brewery.beers.length, 0);
-    return result;
+    return breweries.reduce((total, { beers }) => total + beers.length, 0);
 
     // Annotation:
     // I used .reduce() to sum the length of all the beers for each brewery, defaulting it to 0.
@@ -323,11 +266,10 @@ const breweryPrompts = {
 
   getBreweryBeerCount() {
 
-    const result = breweries.map(brewery => ({
-      name: brewery.name,
-      beerCount: brewery.beers.length
+    return breweries.map(({ name, beers }) => ({
+      name: name,
+      beerCount: beers.length
     }));
-    return result;
 
     // Annotation:
     // I used map to output an array of objects where each object contains the name and number of beers of the brewery.
@@ -335,150 +277,113 @@ const breweryPrompts = {
 
   findHighestAbvBeer() {
 
-    const result = [];
-    breweries.map(brewery => brewery.beers)
-      .forEach(beerList => {
-        beerList.forEach(beer => {
-          result.push(beer);
-        });
+    return breweries.reduce((highest, { beers }) => {
+      beers.forEach(beer => {
+        if(beer.abv > highest.abv) {
+          highest = beer;
+        }
       });
-    return result.reduce((a, b) => Math.max(a.abv, b.abv) === a.abv ? a : b);
+      return highest;
+    }, breweries[0].beers[0]);
 
     // Annotation:
-    // I used the same method as the cakes to create a single array of all beers. Then I used reduce to compare two beers a, b and return either based on the max of their respective abv. This ultimately returns 1 value, the single beer with the highest abv.
+    // We want to find the highest abv of all beers. We can use reduce, because we want to output a single beer. Here the accumulator is initialized to the first beer in the first brewery, from which all subsequent beers are compared. If the abv is higher, `highest` is reassigned to that beer. Then `highest` is returned to continue.
   }
 };
 
 
-
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
-
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-
-
-
-
-
-
-// DOUBLE DATASETS
+// `DOUBLE` DATASETS
 // =================================================================
 
 // DATASET: instructors, cohorts from ./datasets/turing
 const turingPrompts = {
+  
   studentsForEachInstructor() {
 
-    const result = instructors.map(instructor => ({
-      name: instructor.name,
-      studentCount: cohorts[instructor.module - 1].studentCount
+    return instructors.map(({ name, module }) => ({
+      name: name,
+      studentCount: cohorts[module - 1].studentCount
     }));
-    return result;
 
     // Annotation:
     // I mapped each instructor to a new array of objects with the key/value pairs of name and sudentCount. I could simply use instructor.name for the name but I had to bring in the cohorts array to get the student count. I accessed that data by using bracket notation and subtracting one from instructor.teaches because of array 0-indexing
   },
 
+  // ! Can be improved?
   studentsPerInstructor() {
 
-    const numTeachers = {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0
-    };
     const result = {};
 
-    instructors.forEach(instructor => numTeachers[instructor.module]++);
-    cohorts.forEach(cohort => {
-      result[`cohort${cohort.cohort}`] = cohort.studentCount / numTeachers[cohort.module];
+    const numTeachers = instructors.reduce((total, { module }) => {
+      if(!total[module]) {
+        total[module] = 0;
+      }
+      total[module]++;
+      return total;
+    }, {});
+
+    cohorts.forEach(({ cohort, studentCount, module }) => {
+      result[`cohort${cohort}`] = studentCount / numTeachers[module];
     });
     return result;
 
     // Annotation:
-    // I choose to create an object with a key for each mod and initialized all to 0. I then looped through the instructors array and incremented the appropriate value in the numTeachers object. I then looped through the cohorts and added a key for each cohort and then divided the student count with the number of teachers for the mod as the value.
+    // First we create an object numTeachers that is assigned to the output of `reduce` with key/value pairs for each mod. Inside `reduce`, if `total` does not have a key for that `module` one is initialized to zero. Then the value for that `module` is incremented before `total` is returned. In the second loop, the `result` object is updated using string iterpolation for the key name, and the value is the average students per teacher, calculated using the `studentCount` and `numTeachers` for that module.
   },
 
   modulesPerTeacher() {
 
-    const result = {};
-
-    instructors.forEach(instructor => {
-      result[instructor.name] = cohorts.reduce((total, cohort) => {
-        if(instructor.teaches.some(r => cohort.curriculum.indexOf(r) >= 0)) {
-          total.push(cohort.module);
+    return instructors.reduce((total, { name, teaches }) => {
+      if(!total[name]) {
+        total[name] = [];
+      }
+      cohorts.forEach(({ module, curriculum }) => {
+        if(teaches.some(subject => curriculum.includes(subject))) {
+          total[name].push(module);
         }
-        return total;
-      }, []);
-    });
-
-    return result;
+      });
+      return total;
+    }, {});
 
     // Annotation:
-    // Write your annotation here as a comment
+    // Calling `reduce` on instructors and passing `total` and `{ name, teaches }` as arugments. We then check if `name` is a 
   },
 
   curriculumPerTeacher() {
 
-    const result =  {};  
-    const subjects = Array.from(new Set(cohorts.reduce((total, cohort) => {
-      cohort.curriculum.forEach(subject => {
-        total.push(subject);
+    return instructors.reduce((total, { name, teaches }) => {
+      teaches.forEach(subject => {
+        if(!total[subject]) {
+          total[subject] = [];
+        }
+        total[subject].push(name);
       });
       return total;
-    }, [])));
-
-    subjects.forEach(subject => {
-      result[subject] = instructors.reduce((total, instructor) => {
-        if(instructor.teaches.includes(subject)) {
-          total.push(instructor.name);
-        }
-        return total;
-      }, []);
-    });
-
-    return result;
+    }, {});
 
     // Annotation:
-    // Write your annotation here as a comment
+    // 
   }
 };
 
 
-
-
-
-
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
-
-
 
 
 // DATASET: bosses, sidekicks from ./datasets/bosses
 const bossPrompts = {
+
+  // ! .includes() intead of === ?
+  // ! .reduce()?
+  // ! Can't destructure because of shared var names?
+
   bossLoyalty() {
 
-    const result = Object.values(bosses).map(boss => ({
+    return Object.values(bosses).map(boss => ({
       bossName: boss.name,
       sidekickLoyalty: sidekicks.reduce((total, sidekick) => {
         boss.sidekicks.forEach(bossSidekick => {
@@ -490,116 +395,101 @@ const bossPrompts = {
       }, 0)
     }));
 
-    return result;
-
     // Annotation:
     // I wanted to loop through the values of the bosses object, which would return an array of all the individual boss object. I then wanted to loop through the sidekicks object and compare the names of each with the names in the boss sidekicks array. I then reduced their loyalty value to a single sum and assign that to sidekickLoyalty.
   }
 };
 
 
-
-
-
-
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
-
-
 
 
 // DATASET: constellations, stars } from ./datasets/astronomy
 const astronomyPrompts = {
+
   starsInConstellations() {
 
-    //want to use reduce/filter
+    // ! Does not allow for 'The Plow' or 'The Little Dipper'
+    // ! Should work with .includes(), does not accept ^
+    // ! Can't destructure because of shared var names?
 
-    const result = [];
-  
-    stars.forEach(star => {
+    return stars.reduce((total, star) => {
       Object.values(constellations).forEach((constellation) => {
-        if(star.constellation === constellation.names[0]) {
-          result.push(star);
+        if(constellation.names[0] === star.constellation) {
+          total.push(star);
         }
       });
-    });
+      return total;
+    }, []);
 
-    return result;
-
+    // TODO
     // Annotation:
     // Write your annotation here as a comment
   },
 
+  // ! How to destructure and keep reference to whole object?
+
   starsByColor() {
 
-    const result = {};
+    return stars.reduce((total, star) => {
+      if(!total[star.color]) {
+        total[star.color] = [];
+      }
+      total[star.color].push(star);
+      return total;
+    }, {});
 
-    stars.forEach(star => result[star.color] = []);
-    stars.forEach(star => result[star.color].push(star));
-
-    return result;
-
+    // TODO
     // Annotation:
     // Write your annotation here as a comment
   },
 
   constellationsStarsExistIn() {
 
-    const result = [];
-    
-    stars.sort((a,b) => a.visualMagnitude < b.visualMagnitude ? -1 : 1)
-      .forEach(star => {
-        result.push(star.constellation);
-      });
+    return stars.sort((a,b) => a.visualMagnitude - b.visualMagnitude)
+      .reduce((total, { constellation }) => {
+        total.push(constellation);
+        return total;
+      }, []);
 
-    return result;
-
+    // TODO
     // Annotation:
     // Write your annotation here as a comment
   }
 };
 
 
-
-
-
-
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
-
-
 
 
 // DATASET: charaters, weapons from ./datasets/ultima
 const ultimaPrompts = {
+
   totalDamage() {
 
-    // Return the sum of the amount of damage for all the weapons that our characters can use
-    // Answer => 113
+    // ! Can't destructure because of overlapping var names (weapons)?
 
-    const result = Object.values(characters).reduce((total, character) => {
+    return Object.values(characters).reduce((total, character) => {
       character.weapons.forEach(weapon => {
         total += weapons[weapon].damage;
       });
       return total;
     }, 0);
 
-    return result;
-
+    // TODO
     // Annotation:
     // Write your annotation here as a comment
   },
 
+  // ! Help
   charactersByTotal() {
 
     const result = [];
@@ -618,70 +508,59 @@ const ultimaPrompts = {
 
     return result;
 
+    // TODO
     // Annotation:
     // Write your annotation here as a comment
   },
 };
 
 
-
-
-
-
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-
-
-
 
 
 // DATASET: dinosaurs, humans, movies from ./datasets/dinosaurs
 const dinosaurPrompts = {
+
   countAwesomeDinosaurs() {
 
-    const result = {};
-
-    movies.forEach(movie => {
-      result[movie.title] = movie.dinos.reduce((total, dino) => {
-        if(dinosaurs[dino].isAwesome) {
-          total++;
-        }
-        return total;
+    return movies.reduce((total, { title, dinos }) => {
+      total[title] = dinos.reduce((sum, dino) => {
+        if(dinosaurs[dino].isAwesome) sum++;
+        return sum;
       }, 0);
-    });
+      return total;
+    }, {});
 
-    return result;
-
+    // TODO
     // Annotation:
     // Write your annotation here as a comment
   },
 
   averageAgePerMovie() {
 
-    const result = {};
+    return movies.reduce((total, { title, director, cast, yearReleased }) => {
+      if(!total[director]) {
+        total[director] = {};
+      }
+      total[director][title] = Math.floor(cast.reduce((ageSum, actor) => {
+        return ageSum + (yearReleased - humans[actor].yearBorn);
+      }, 0) / cast.length);
+      return total;
+    }, {});
 
-    movies.forEach(movie => {
-      result[movie.director] = {};
-    });
-
-    movies.forEach(movie => {
-      result[movie.director][movie.title] = Math.floor(movie.cast.reduce((total, actor) => {
-        return (total + (movie.yearReleased - humans[actor].yearBorn));
-      }, 0) / movie.cast.length);
-    });
-
-    return result;
-
+    // TODO
     // Annotation:
     // Write your annotation here as a comment
   },
 
   uncastActors() {
- 
+
+    // ! ???????
+
     const result = [];
     const allActors = movies.reduce((total, movie) => {
       movie.cast.forEach(actor => total.push(actor));
