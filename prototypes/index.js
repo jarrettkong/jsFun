@@ -51,7 +51,7 @@ const kittyPrompts = {
 
   orangeKittyNames() {
 
-    return kitties.filter(({ color }) => color === 'orange').map(cat => cat.name);
+    return kitties.filter(cat => cat.color === 'orange').map(cat => cat.name);
 
     // Annotation:
     // I first began by using Array.filter() to find only the orage cats, then intead of using .forEach() to loop through all the cats and add only the names to a new Array to return, I used map on the result of filter on the same line.
@@ -65,18 +65,18 @@ const kittyPrompts = {
     // I initially wrote a comparison function, which took 2 arguments, a & b. These represent two consecutive objects in the array, in this case cats. The return 1 and -1 statements tell the sort function that if a.age < b.age, then the sort order of a should be increased by 1, otherwise decreased. This continues for all cats a, b until the entire array has been sorted.
   },
 
-  // ! Does this mutate the original data?
   growUp() {
 
-    return kitties.reduce((cats, cat) => {
-      cat.age += 2;
-      cats.push(cat);
-      return cats;
-    }, []);
+    return kitties.map(({ name, age, color }) => ({
+        name: name,
+        age: age += 2,
+        color: color
+    })) 
+    
+    // Annotation:
+    // We use `map` on `kitties` and return a new modified object for each cat with the age increased by 2
   }
 
-  // Annotation:
-  // I used .reduce() on the `kitties` array, and then added 2 to the age of each cat. From there, the cats were added to the accumulator `cats` array. Cats is returned after each loop.
 };
 
 
